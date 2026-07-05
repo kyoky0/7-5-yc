@@ -13,7 +13,7 @@ export async function GET() {
   const company = companyId ? getCompany(companyId) : undefined;
   return NextResponse.json({
     companyId: companyId ?? null,
-    companyName: company?.nameJa ?? null,
+    companyName: company?.name ?? null,
     entries: getLocalAudit(),
   });
 }

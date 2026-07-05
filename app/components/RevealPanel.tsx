@@ -54,7 +54,7 @@ export function RevealPanel({
                   className="text-xs font-semibold"
                   style={{ color: c.color }}
                 >
-                  {c.nameJa}
+                  {c.name ?? c.nameJa}
                 </span>
                 <button
                   onClick={() => reveal(c.id)}

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Agent Expo — Secure Agent-to-Agent Conference Matching",
-  description: "We replaced 2 days of random conference networking with 10 minutes of secure agent-to-agent matching.",
+  title: "Serendipity — AI-Powered Cross-Industry Conference Matching",
+  description: "Replace 2 days of random conference networking with 10 minutes of AI-matched meetings inside a Trusted Execution Environment.",
 };
 
 export default function RootLayout({

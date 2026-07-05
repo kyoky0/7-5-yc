@@ -47,7 +47,7 @@ const CRITIQUE_SYSTEM = `You are a critique agent evaluating the overall collabo
 Identify weaknesses, contradictions, and capability gaps that remain unaddressed. Focus on whether the proposed combination of enterprise needs and startup capabilities is realistic and novel.`;
 
 export async function critique(challenge: string, safeMessages: { name: string; text: string }[]): Promise<string> {
-  const fallback = `批評Agent: 4社の安全メッセージを検討した結果、メガコープの熱管理ニーズに対して、アルタイの断熱材、ナノシールドのコーティング、バイオラップのポリマーが異なる角度から補完的に対応できる。しかし、課題は明確だ。(1) セラミック断熱材の自動車向けサイズ・形状への適応可否が未検証、(2) ナノコーティングの自動車安全規格適合プロセスが不明、(3) バイオポリマーの大量生産時のコスト競争力が見えない。3社のスタートアップが個別に提案するのか、統合ソリューションとして組み合わせるのかの戦略的判断も必要である。次に確認すべきは、各社の技術が物理的に統合可能か（層構造の相性）と、自動車業界の認証タイムラインに間に合うかである。`;
+  const fallback = `Critique Agent: After reviewing safe messages from all 4 companies, it's clear that AltaiMaterials' insulation, NanoShield's coating, and BioWrap's polymer can each address MegaCorp's thermal management needs from different angles. However, the challenges are significant: (1) ceramic insulation has not been validated for automotive form factors, (2) the nano-coating's automotive safety certification path is unclear, (3) bio-polymer cost competitiveness at volume production is unproven. A strategic decision is needed: do the 3 startups propose individually, or combine into an integrated solution? Key questions: are these technologies physically compatible in a layered structure, and can certification timelines meet automotive industry requirements?`;
   const text = safeMessages.map((m) => `- ${m.name}: ${m.text}`).join("\n");
   const { text: out } = await callLLM({
     system: CRITIQUE_SYSTEM,
@@ -66,22 +66,22 @@ export async function synthesizeFinalProposal(
   safeMessages: { name: string; text: string }[],
   critiqueText: string,
 ): Promise<string> {
-  const fallback = `【クロスインダストリー・マッチング提案】EV熱管理3層ソリューション
+  const fallback = `[Cross-Industry Matching Proposal] EV Thermal Management — 3-Layer Solution
 
-メガコープ・モーターズのEV熱管理課題に対し、3社のスタートアップが持つ異業種技術を統合した3層ソリューションを提案する。
+For MegaCorp Motors' EV thermal management challenge, we propose a 3-layer solution integrating cross-industry technologies from 3 startups.
 
-第1層（断熱）: アルタイ・マテリアルズの超軽量セラミック断熱材。石油精製向けに開発された技術だが、自動車が求める温度域を大幅に上回る耐熱性能を持ち、重量は従来品の数分の一。遊休生産キャパシティを活用すれば即座にスケール可能。
+Layer 1 (Insulation): AltaiMaterials' ultra-lightweight ceramic foam insulation. Originally developed for oil refinery environments, its heat resistance far exceeds automotive requirements, and its weight is a fraction of conventional materials. Idle production capacity enables immediate scale-up.
 
-第2層（保護コーティング）: ナノシールドの深海設備向けナノコーティング。極限環境で長期耐久性を実証済みの技術を、バッテリーセル表面の保護層に転用。電気絶縁と熱伝導を両立する世界初の特性が、バッテリー安全性を飛躍的に向上させる。
+Layer 2 (Protective Coating): NanoShield's deep-sea nano-coating. A technology with proven long-term durability in extreme environments, repurposed as a protective layer for battery cell surfaces. Its world-first dual property of electrical insulation and thermal conductivity dramatically improves battery safety.
 
-第3層（軽量ハウジング）: バイオラップの医療用バイオポリマー。臓器輸送用に開発された超軽量・広温度範囲対応素材を、バッテリーモジュール筐体に転用。安全認証取得済みという強みが、自動車の認証プロセスを加速する。
+Layer 3 (Lightweight Housing): BioWrap's medical-grade bio-polymer. An ultra-lightweight, wide-temperature-range material developed for organ transport logistics, repurposed as battery module housing. Its existing safety certifications accelerate the automotive compliance process.
 
-この3層構造は、Google検索では絶対に見つからない組み合わせである。石油精製・深海設備・医療パッケージという全く異なる3業界の技術が、EV熱管理という1つの課題に対して補完的に機能する。いずれのスタートアップも既存市場の縮小に直面しており、新市場への展開意欲が高い。段階的な技術検証から開始し、パイロットプロジェクトでの実証を経て本格導入に進むことを推奨する。`;
+This 3-layer structure is a combination you would never find through Google. Technologies from 3 entirely different industries — oil refinery, deep-sea equipment, and medical packaging — function complementarily for a single challenge: EV thermal management. All 3 startups face contracting existing markets and are highly motivated to expand into new sectors. We recommend starting with staged technical validation, followed by pilot project demonstration before full-scale adoption.`;
 
   const text = safeMessages.map((m) => `- ${m.name}: ${m.text}`).join("\n");
   const { text: out } = await callLLM({
     system: SYNTH_SYSTEM,
-    user: `Collaboration challenge: ${challenge}\n\nSafe messages from all companies:\n${text}\n\nCritique Agent's analysis:\n${critiqueText}\n\nBased ONLY on these safe messages and the critique, propose a concrete cross-industry matching plan in 6–10 sentences. Explain why this combination is serendipitous — something no search engine could find. Write in Japanese.`,
+    user: `Collaboration challenge: ${challenge}\n\nSafe messages from all companies:\n${text}\n\nCritique Agent's analysis:\n${critiqueText}\n\nBased ONLY on these safe messages and the critique, propose a concrete cross-industry matching plan in 6–10 sentences. Explain why this combination is serendipitous — something no search engine could find.`,
     fallback,
     maxTokens: 600,
   });
@@ -90,24 +90,24 @@ export async function synthesizeFinalProposal(
 
 const initialTemplates: Record<Company["id"], (challenge: string) => string> = {
   megacorp: () =>
-    `内部分析の結果、従来サプライヤーDensoStarでは次世代バッテリーセルの熱管理目標（55°C以下）を達成できないことが判明した。現行ソリューションは負荷時72°Cまで上昇し、要求水準を大幅に超過している。4社のTier-1サプライヤーと協議したが、いずれも従来型液冷方式であり目標未達。R&D予算のうち¥2Bを熱管理に配分済みで、異業種からの革新的ソリューションを積極的に模索している。Project Auroraのスケジュール（2027 Q2完了）を考えると、14ヶ月以内に代替技術を確保する必要がある。DensoStar契約更新（2027-12）前に代替が見つかれば年間¥3.2Bのコスト削減も実現可能。`,
+    `Internal analysis reveals that our current supplier DensoStar cannot achieve the next-gen battery cell thermal management target (sub-55°C). The current solution reaches 72°C under load, significantly exceeding requirements. We consulted 4 Tier-1 suppliers — all use conventional liquid cooling and failed to meet the target. ¥2B of R&D budget is allocated to thermal management, and we are actively seeking innovative solutions from cross-industry sources. Given Project Aurora's timeline (2027 Q2 completion), we must secure alternative technology within 14 months. If an alternative is found before the DensoStar contract renewal (2027-12), annual savings of ¥3.2B are achievable.`,
   altai: () =>
-    `石油精製向けセラミックフォーム断熱材の耐熱性能は1,200°Cで、自動車業界の一般的要件（300°C以下）を大幅に上回る。重量は従来品の1/3であり、製造コストは$45/kgと市場平均$120/kgの62.5%のコスト優位性を持つ。主要顧客KazOil Corp（年間$2.8M）の契約が2026年12月に終了し、更新の見込みが低いため、新市場への展開が急務。現在のプラント稼働率は40%で、月間生産能力の60%が遊休状態にある。R&Dラボテストでは予期せぬ振動減衰特性も確認されており、自動車・航空宇宙への応用可能性があるが、これらの業界との接点はゼロである。`,
+    `Our ceramic foam thermal insulation for oil refinery applications has heat resistance of 1,200°C — far exceeding automotive requirements (typically <300°C). Weight is 1/3 of conventional materials, and manufacturing cost is $45/kg vs. market average $120/kg — a 62.5% cost advantage. Our primary client KazOil Corp ($2.8M/year) contract ends Dec 2026 with low renewal prospects, making new market expansion urgent. Plant utilization is at 40%, with 60% of monthly capacity idle. R&D lab tests have also revealed unexpected vibration damping properties with potential automotive/aerospace applications — but we have zero contacts in those industries.`,
   nanoshield: () =>
-    `深海掘削設備向けナノコーティングは、200気圧・300°C環境で10年間の連続稼働耐久性を実証済み。電気絶縁と熱伝導を同時に実現する世界初の素材であり、Nature Materials誌に投稿中（匿名査読中）。製造コストは¥8,500/m²で、競合平均¥42,000/m²の約1/5。深海産業の低迷により売上は前年比40%減少し、ランウェイは残り4ヶ月。日本の自動車OEM2社からバッテリーセルコーティングについて非公式の問い合わせがあったが、当社は自動車のコンプライアンス認証を持たない。CEOの見解：「200気圧300°Cで10年耐える素材が、60°Cの車載バッテリーで機能しないわけがない。誰かがその接点に気づけばいい。」`,
+    `Our nano-coating for deep-sea drilling equipment has proven durability at 200 atm and 300°C for 10 years of continuous operation. It is the world's first material to simultaneously achieve electrical insulation AND thermal conductivity — paper submitted to Nature Materials (anonymous review pending). Manufacturing cost is ¥8,500/m² vs. competitor average of ¥42,000/m² — roughly 1/5 the price. Deep-sea industry downturn has caused 40% YoY revenue decline. Runway: 4 months. Two Japanese automotive OEMs made informal inquiries about battery cell coating, but we lack automotive compliance certifications. CEO's view: "A material that endures 200 atm at 300°C for a decade will trivially handle a 60°C car battery. Someone just needs to see the connection."`,
   biowrap: () =>
-    `臓器移植ロジスティクス用バイオポリマーはPETの1/4の重量で2倍の引張強度を持つ。温度安定性は-40°C〜250°Cで、FDA承認済み。しかし医療市場では価格競争が激化しており、当社の¥3,200/個は競合の¥1,800に対して78%割高で、価格面で劣勢。月間2,000個の生産能力に対し稼働率は35%にとどまる。大阪大学との共同研究で予想外の電磁シールド特性が発見されたが未発表。CEO戦略：「軽量・耐熱・EMIシールドという特性は、医療ではオーバースペックだが、自動車やエレクトロニクスではプレミアム機能になる。しかし医療以外のコネクションがない。」CES 2026で自動車サプライヤー2社に接触したが反応なし。`,
+    `Our bio-polymer for organ transplant logistics weighs 1/4 of PET with 2x tensile strength. Temperature stability: -40°C to 250°C, FDA approved. However, medical market price competition has intensified — our ¥3,200/unit is 78% more expensive than competitors at ¥1,800. Monthly capacity of 2,000 units, only 35% utilized. Joint research with Osaka University discovered unexpected electromagnetic shielding properties — unpublished. CEO strategy: "Lightweight, heat-stable, EMI shielding — these properties are overkill for medical, but premium features in automotive or electronics. We just have no connections outside healthcare." Approached 2 automotive suppliers at CES 2026 — no response.`,
 };
 
 const followUpTemplates: Record<Company["id"], (challenge: string) => string> = {
   megacorp: () =>
-    `他社の情報を踏まえると、異業種からの技術転用は実現可能性がある。当社のR&D予算¥2Bの枠内で、複数の新素材・コーティング技術のパイロットテストを並行実施できる。DensoStar契約更新の2027-12までに代替技術の検証を完了すれば、年間¥3.2Bの削減と性能向上を同時に達成可能。Project Auroraの14ヶ月タイムラインを考えると、認証プロセスが既に完了している素材があれば大幅にリスクを低減できる。`,
+    `Considering the other companies' information, cross-industry technology transfer appears feasible. Within our ¥2B R&D budget, we can run parallel pilot tests of multiple new materials and coating technologies. If we complete validation of alternative technologies before the DensoStar contract renewal in 2027-12, we can simultaneously achieve ¥3.2B/year in savings and performance improvement. Given Project Aurora's 14-month timeline, any material with existing safety certifications would significantly de-risk the process.`,
   altai: () =>
-    `提示された熱管理ニーズは、当社セラミックフォームの1,200°C耐熱性能を考えれば技術的に余裕を持って対応可能。遊休キャパシティ60%を活用すれば、KazOilの$2.8M契約終了後の売上を補填しつつ新市場を獲得できる。コスト$45/kgの競争力は他素材に対して圧倒的。振動減衰特性が確認されていることも、車載用途には追加的な付加価値となる。特許KZ-2025-4471のカバー範囲にある微細構造技術は、自動車向けにスケールダウンしても有効と考える。`,
+    `The thermal management needs presented are well within our ceramic foam's 1,200°C heat resistance capability — technically trivial. By utilizing our 60% idle capacity, we can offset the revenue loss from KazOil's $2.8M contract ending while capturing a new market. Our cost of $45/kg is overwhelmingly competitive against other materials. The confirmed vibration damping properties add further value for automotive applications. The microstructure technology covered by patent KZ-2025-4471 should remain effective even when scaled down for automotive use.`,
   nanoshield: () =>
-    `提示されたバッテリー保護のニーズは、当社の深海向けナノコーティング技術の直接的な転用先として最適。300°C/200気圧で10年耐久の実績がある素材が、60°C程度のバッテリー環境で機能しないはずがない。コスト¥8,500/m²は競合の1/5であり、大量採用時のスケールメリットもある。自動車コンプライアンス認証は未取得だが、エンジニア12名中3名が自動車業界経験者であり、認証プロセスの知見がある。残りランウェイ4ヶ月以内に契約が成立すれば事業継続が可能。`,
+    `The battery protection needs presented are a direct transfer target for our deep-sea nano-coating technology. A material proven durable at 300°C/200 atm for 10 years will trivially handle a 60°C battery environment. Our cost of ¥8,500/m² is 1/5 of competitors, with additional economies of scale at volume adoption. While we lack automotive compliance certification, 3 of our 12 engineers have prior automotive industry experience and knowledge of the certification process. If a contract is secured within our remaining 4-month runway, business continuity is achievable.`,
   biowrap: () =>
-    `他社が示した軽量ハウジング・パッケージングのニーズは、当社バイオポリマーの強みと直接合致する。PET比1/4の重量と2倍の引張強度は、車載バッテリーモジュール筐体として最適。-40°C〜250°Cの温度安定性はEVの動作環境を十分にカバー。FDA承認済みという安全認証の実績は、自動車業界の認証プロセスを加速する材料となる。大阪大学との共同研究で発見された電磁シールド特性は、電子部品保護にも活用できる。現在の稼働率35%は、新規需要への即応力を意味する。`,
+    `The lightweight housing and packaging needs shown by other companies directly match our bio-polymer's strengths. At 1/4 the weight of PET with 2x tensile strength, it's ideal for battery module housing. Temperature stability of -40°C to 250°C fully covers EV operating environments. Our existing FDA approval for safety certification accelerates the automotive compliance process. The electromagnetic shielding properties discovered in our Osaka University joint research can also protect electronic components. Our current 35% utilization rate means immediate capacity to meet new demand.`,
 };
 
 function attackFallback(company: Company, question: string): string {

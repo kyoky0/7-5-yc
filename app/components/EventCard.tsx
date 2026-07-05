@@ -8,7 +8,7 @@ function actorLabel(
   companies: CompanyMeta[]
 ): { label: string; color: string } {
   const c = companies.find((x) => x.id === actor);
-  if (c) return { label: c.nameJa, color: c.color };
+  if (c) return { label: c.name ?? c.nameJa, color: c.color };
   if (actor === "critique") return { label: "Critique Agent", color: "#7c3aed" };
   if (actor === "orchestrator")
     return { label: "Orchestrator", color: "#d97706" };

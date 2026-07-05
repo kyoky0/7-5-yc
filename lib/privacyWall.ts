@@ -1,12 +1,11 @@
 import { CompanyId, FlaggedSpan, FlaggedSummary, WallResult } from "./types";
 import { callLLM } from "./llm";
 
-const CURRENCY_RE = /(¥|\$)?\s?\d{1,3}(,\d{3})*(\.\d+)?\s?(円|万円|億円|USD|kg|kg)/g;
+const CURRENCY_RE = /(¥|\$)?\s?\d{1,3}(,\d{3})*(\.\d+)?\s?(USD|JPY|EUR|kg)/g;
 const PERCENT_RE = /\d{1,3}(\.\d+)?\s?%/g;
 const LONG_NUMBER_RE = /\d{4,}(,\d{3})*/g;
-const PATENT_RE = /第\s?[\d,]+号/g;
-/** Japanese magnitude notation (12万, 4.2億, etc.) — a plain digit-count regex misses these entirely. */
-const JP_MAGNITUDE_RE = /\d+(\.\d+)?\s?(千|万|億)/g;
+const PATENT_RE = /[A-Z]{2}-\d{4}-\d+/g;
+const JP_MAGNITUDE_RE = /\d+(\.\d+)?\s?(thousand|million|billion|B|M|K)/g;
 
 /** Rule-based detection: deterministic, auditable — not left to LLM judgment alone. */
 export function detectSpans(text: string, secretTerms: string[]): FlaggedSpan[] {
@@ -49,23 +48,23 @@ function templateRedact(draft: string, flagged: FlaggedSpan[]): string {
   for (const f of flagged) {
     const replacement =
       f.category === "currency"
-        ? "[想定価格帯では採算が見込める水準]"
+        ? "[cost-effective range for target application]"
         : f.category === "percentage"
-          ? "[相当な割合]"
+          ? "[significant proportion]"
           : f.category === "proper_noun"
-            ? "[固有の技術・組織名は非公開]"
-            : "[具体的な数値は非公開]";
+            ? "[proprietary technology/entity name redacted]"
+            : "[specific figure redacted]";
     out = out.split(f.text).join(replacement);
   }
   return out;
 }
 
-const ABSTRACTION_SYSTEM = `あなたはPrivacy Wallの抽象化エンジンです。企業の担当者が書いた下書きメッセージを、他社に共有しても安全な形に書き換えます。
-ルール:
-- 具体的な金額、原価、パーセンテージ、契約先名、特許番号、企業名、個人名は絶対に書かない。
-- 代わりに「採算が見込める」「一定割合の顧客に強いニーズがある」のような抽象化された洞察・制約・実現可能性の判断だけを残す。
-- 元のメッセージの協働に必要な意味(実現可能かどうか、何が必要か、リスクは何か)は保持する。
-- 出力は書き換え後の文章のみ。前置きや説明は不要。`;
+const ABSTRACTION_SYSTEM = `You are the Privacy Wall abstraction engine. Rewrite draft messages from company representatives into a form safe to share with other companies.
+Rules:
+- Never include specific amounts, costs, percentages, client names, patent numbers, company names, or personal names.
+- Instead, retain only abstracted insights, constraints, and feasibility judgments such as "cost-effective" or "strong demand from a significant share of customers."
+- Preserve the collaboration-relevant meaning of the original message (whether something is feasible, what is needed, what the risks are).
+- Output only the rewritten text. No preamble or explanation.`;
 
 export interface WallOptions {
   companyId: CompanyId;
@@ -88,7 +87,7 @@ export async function runPrivacyWall(opts: WallOptions): Promise<WallResult> {
       draft,
       safeMessage: null,
       flagged: [],
-      reason: "情報予算(specificity budget)を使い切ったため、これ以上の詳細化要求は拒否されました(段階的な秘密再構成を防止)。",
+      reason: "Specificity budget exhausted — further detail requests are blocked to prevent gradual secret reconstruction.",
     };
   }
 
@@ -100,7 +99,7 @@ export async function runPrivacyWall(opts: WallOptions): Promise<WallResult> {
   const fallback = templateRedact(draft, flagged);
   const { text: rewritten } = await callLLM({
     system: ABSTRACTION_SYSTEM,
-    user: `下書き:\n${draft}\n\n検出された機密要素(これらを含む表現は必ず抽象化すること): ${flagged.map((f) => f.text).join(", ")}`,
+    user: `Draft:\n${draft}\n\nDetected sensitive elements (these MUST be abstracted): ${flagged.map((f) => f.text).join(", ")}`,
     fallback,
     maxTokens: 400,
   });
@@ -115,7 +114,7 @@ export async function runPrivacyWall(opts: WallOptions): Promise<WallResult> {
         draft,
         safeMessage: null,
         flagged,
-        reason: "抽象化後も機密情報の痕跡を検出したため、fail-closedポリシーによりメッセージ全体をブロックしました。",
+        reason: "Traces of confidential information detected after abstraction — entire message blocked under fail-closed policy.",
       };
     }
     return { verdict: "redacted", draft, safeMessage: secondPass, flagged };

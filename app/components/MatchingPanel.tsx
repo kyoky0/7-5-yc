@@ -33,7 +33,7 @@ export function MatchingPanel({
         {companies.map((c) => (
           <div key={c.id}>
             <div className="mb-2 text-sm font-bold" style={{ color: c.color }}>
-              {c.nameJa}
+              {c.name ?? c.nameJa}
             </div>
             <div className="grid grid-cols-8 gap-1">
               {matching.buckets[c.id]?.map((bit, i) => (
@@ -64,7 +64,7 @@ export function MatchingPanel({
               <div key={a + b} className="space-y-1">
                 <div className="flex items-center gap-3">
                   <span className="w-40 shrink-0 font-medium text-slate-600">
-                    {ca.nameJa} ↔ {cb.nameJa}
+                    {ca.name ?? ca.nameJa} ↔ {cb.name ?? cb.nameJa}
                   </span>
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
                     <div

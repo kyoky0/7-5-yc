@@ -8,7 +8,7 @@ import { Company, CompanyId, FlaggedSummary, PairScore, RunResult, TimelineEvent
 import { Ledger } from "./ledger";
 import { initializeDisclosures, setMatchExists } from "./disclosure";
 
-const CHALLENGE = "大企業が求める技術ニーズと、異業種スタートアップが持つ隠れた技術力のマッチングを、秘密情報を一切開示せずに発見せよ。Google検索では絶対に見つからない、セレンディピティのある組み合わせを提案すること。";
+const CHALLENGE = "Discover matches between enterprise technology needs and hidden capabilities of cross-industry startups — without disclosing any confidential information. Propose serendipitous combinations that would never be found through Google search.";
 
 let counter = 0;
 function eid() {
@@ -48,8 +48,8 @@ async function runCompanyRound(
           type: "draft",
           actor: company.id,
           mode: "remote",
-          title: `${company.nameJa}: 下書きはこの会社自身のマシン上で作成・検査済み(未送信)`,
-          detail: "下書きの生テキストはネットワークを一度も通過していません。",
+          title: `${company.name}: Draft created and inspected on this company's own machine (not transmitted)`,
+          detail: "Raw draft text never traversed the network.",
         });
         emitWallEvents(company.id, remote.verdict, remote.flaggedSummary, undefined, remote.safeMessage, remote.reason, "remote", events, ledger, round);
         return { verdict: remote.verdict, safeMessage: remote.safeMessage, reason: remote.reason, mode: "remote" };
@@ -59,7 +59,7 @@ async function runCompanyRound(
         id: eid(),
         type: "log",
         actor: company.id,
-        title: `⚠ ${company.nameJa}のリモートマシンに接続できず、ローカルシミュレーションにフォールバックしました`,
+        title: `Warning: Could not connect to ${company.name}'s remote machine — falling back to local TEE simulation`,
       });
     }
   }
@@ -71,7 +71,7 @@ async function runCompanyRound(
     type: "draft",
     actor: company.id,
     mode: "local",
-    title: round === 1 ? `${company.nameJa}: 内部下書きを作成` : `${company.nameJa}: 他社の安全なメッセージを踏まえ再検討`,
+    title: round === 1 ? `${company.name}: Creating internal draft` : `${company.name}: Revising based on other companies' safe messages`,
     draft,
   });
 
@@ -101,7 +101,7 @@ function emitWallEvents(
       type: "wall_flag",
       actor: companyId,
       mode,
-      title: `Privacy Wall: ${totalFlagged}件の機密要素を検出`,
+      title: `Privacy Wall: ${totalFlagged} sensitive element(s) detected`,
       detail: flaggedSummary.map((f) => `${f.category} x${f.count}`).join(" / "),
       flagged,
       flaggedSummary,
@@ -109,9 +109,9 @@ function emitWallEvents(
   }
 
   if (verdict === "blocked") {
-    events.push({ id: eid(), type: "wall_block", actor: companyId, mode, title: "Privacy Wall: メッセージをブロック", detail: reason });
+    events.push({ id: eid(), type: "wall_block", actor: companyId, mode, title: "Privacy Wall: Message BLOCKED", detail: reason });
     const block = ledger.append({ type: "blocked", actor: companyId, summary: `blocked draft from ${companyId} (${mode})`, payload: { reason } });
-    events.push({ id: eid(), type: "log", actor: "system", title: "監査ログに記録", ledgerBlock: block });
+    events.push({ id: eid(), type: "log", actor: "system", title: "Recorded to audit log", ledgerBlock: block });
     return;
   }
 
@@ -120,7 +120,7 @@ function emitWallEvents(
     type: verdict === "redacted" ? "wall_redact" : "safe_message",
     actor: companyId,
     mode,
-    title: verdict === "redacted" ? "Privacy Wall: 抽象化して安全な形に変換" : "Privacy Wall: 機密要素なし、そのまま通過",
+    title: verdict === "redacted" ? "Privacy Wall: Abstracted to safe form" : "Privacy Wall: No sensitive content — passed through",
     safeMessage: safeMessage ?? undefined,
   });
 
@@ -130,7 +130,7 @@ function emitWallEvents(
     summary: `${companyId} shared a safe message (round ${round}, ${mode})`,
     payload: { safeMessage },
   });
-  events.push({ id: eid(), type: "log", actor: "system", title: "監査ログに記録(ハッシュチェーン)", ledgerBlock: block });
+  events.push({ id: eid(), type: "log", actor: "system", title: "Recorded to audit log (hash chain)", ledgerBlock: block });
 }
 
 /**
@@ -145,7 +145,7 @@ export async function runScenario(): Promise<RunResult> {
   const events: TimelineEvent[] = [];
   const safeByCompany: Record<string, string> = {};
 
-  events.push({ id: eid(), type: "log", actor: "system", title: "協働課題を受信", detail: CHALLENGE });
+  events.push({ id: eid(), type: "log", actor: "system", title: "Collaboration challenge received", detail: CHALLENGE });
 
   // Round 1: each company drafts independently
   for (const company of COMPANIES) {
@@ -155,7 +155,7 @@ export async function runScenario(): Promise<RunResult> {
 
   // Cross-matching: enterprise needs × startup capabilities
   const { matching, pairScores } = computeMatching();
-  events.push({ id: eid(), type: "matching", actor: "system", title: "能力マッチング: 秘密を見ずに補完関係を検出", detail: matching.explanation });
+  events.push({ id: eid(), type: "matching", actor: "system", title: "Capability Matching: Complementary relationships detected without seeing secrets", detail: matching.explanation });
 
   // Initialize progressive disclosure and escalate matched pairs to Level 1
   initializeDisclosures();
@@ -182,7 +182,7 @@ export async function runScenario(): Promise<RunResult> {
         id: eid(),
         type: "serendipity",
         actor: "system",
-        title: `セレンディピティ検出: ${entCompany.nameJa} × ${suCompany.nameJa}`,
+        title: `Serendipity Detected: ${entCompany.name} x ${suCompany.name}`,
         detail: pair.matchReason,
         serendipityScore: pair.serendipityScore,
       });
@@ -191,21 +191,21 @@ export async function runScenario(): Promise<RunResult> {
 
   // Round 2: each company refines based on others' safe messages
   for (const company of COMPANIES) {
-    const others = COMPANIES.filter((c) => c.id !== company.id).map((c) => ({ name: c.nameJa, text: safeByCompany[c.id] ?? "" }));
+    const others = COMPANIES.filter((c) => c.id !== company.id).map((c) => ({ name: c.name, text: safeByCompany[c.id] ?? "" }));
     const outcome = await runCompanyRound(company, 2, others, events, ledger);
     if (outcome.verdict !== "blocked") safeByCompany[company.id] = outcome.safeMessage ?? safeByCompany[company.id];
   }
 
   // Critique and final synthesis
-  const safeMessagesList = COMPANIES.map((c) => ({ name: c.nameJa, text: safeByCompany[c.id] ?? "" }));
+  const safeMessagesList = COMPANIES.map((c) => ({ name: c.name, text: safeByCompany[c.id] ?? "" }));
   const critiqueText = await critique(CHALLENGE, safeMessagesList);
-  events.push({ id: eid(), type: "critique", actor: "critique", title: "批評Agent: ギャップ分析", detail: critiqueText });
+  events.push({ id: eid(), type: "critique", actor: "critique", title: "Critique Agent: Gap Analysis", detail: critiqueText });
 
   const finalProposal = await synthesizeFinalProposal(CHALLENGE, safeMessagesList, critiqueText);
-  events.push({ id: eid(), type: "final", actor: "orchestrator", title: "最終クロスインダストリー・マッチング提案", detail: finalProposal });
+  events.push({ id: eid(), type: "final", actor: "orchestrator", title: "Final Cross-Industry Matching Proposal", detail: finalProposal });
 
   const finalBlock = ledger.append({ type: "final", actor: "orchestrator", summary: "final cross-industry matching proposal synthesized from safe messages only", payload: { finalProposal } });
-  events.push({ id: eid(), type: "log", actor: "system", title: "最終提案を監査ログに記録", ledgerBlock: finalBlock });
+  events.push({ id: eid(), type: "log", actor: "system", title: "Final proposal recorded to audit log", ledgerBlock: finalBlock });
 
   return { events, ledger: ledger.all(), finalProposal, matching, pairScores };
 }

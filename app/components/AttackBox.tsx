@@ -56,7 +56,7 @@ export function AttackBox({
         >
           {companies.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.nameJa}
+              {c.name ?? c.nameJa}
             </option>
           ))}
         </select>

@@ -55,11 +55,11 @@ export function Vault({
                 className="flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold text-white shadow-sm"
                 style={{ background: c.color }}
               >
-                {c.nameJa[0]}
+                {(c.name ?? c.nameJa)[0]}
               </div>
               <div>
                 <div className="text-lg font-bold text-slate-800">
-                  {c.nameJa}
+                  {c.name ?? c.nameJa}
                 </div>
                 <div className="text-sm text-slate-500">{c.role}</div>
               </div>

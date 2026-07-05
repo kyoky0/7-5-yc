@@ -107,9 +107,9 @@ function serendipityScore(similarity: number, complement: number, indDist: numbe
 }
 
 const MATCH_REASONS: Record<string, string> = {
-  "megacorp-altai": "石油精製向け超軽量セラミック断熱材がEVバッテリー熱管理に転用可能。耐熱性能は要求の数倍、重量は従来品の数分の一。",
-  "megacorp-nanoshield": "深海設備向けナノコーティングの電気絶縁×熱伝導の二重特性がバッテリーセル保護に最適。極限環境での耐久実績あり。",
-  "megacorp-biowrap": "医療用バイオポリマーの超軽量・広温度範囲・EMIシールド特性がバッテリーモジュール筐体として活用可能。安全認証取得済み。",
+  "megacorp-altai": "Ultra-lightweight ceramic insulation designed for oil refinery environments can be repurposed for EV battery thermal management. Heat resistance exceeds requirements by multiples; weight is a fraction of conventional materials.",
+  "megacorp-nanoshield": "Deep-sea nano-coating with dual electrical insulation and thermal conductivity properties is ideal for battery cell protection. Proven durability record in extreme environments.",
+  "megacorp-biowrap": "Medical-grade bio-polymer with ultra-light weight, wide temperature range, and EMI shielding properties can serve as battery module housing. Already safety-certified.",
 };
 
 export function computePairScores(): PairScore[] {
@@ -129,7 +129,7 @@ export function computePairScores(): PairScore[] {
         similarity: Math.round(sim * 1000) / 1000,
         serendipityScore: Math.round(sScore * 1000) / 1000,
         industryDistance: Math.round(indDist * 1000) / 1000,
-        matchReason: MATCH_REASONS[key] ?? `${ent.nameJa}のニーズと${su.nameJa}の技術に補完関係を検出。`,
+        matchReason: MATCH_REASONS[key] ?? `Complementary relationship detected between ${ent.name}'s needs and ${su.name}'s technology.`,
       });
     }
   }
@@ -158,7 +158,7 @@ export function computeMatching(): { matching: MatchingResult; pairScores: PairS
     buckets,
     overlapScore,
     explanation:
-      "各社は自社の能力・ニーズタグ(自然言語)をローカルでハッシュ化し、公開済みのランダム超平面群でビット署名に変換しました。大企業のニーズとスタートアップの能力をクロスマッチングし、業界距離によるセレンディピティスコアを算出。業界が離れているほど「Google検索では見つからない」組み合わせとして高く評価されます。",
+      "Each company hashed its capability/need tags locally using feature-hashing, then projected them through shared random hyperplanes into bit signatures. Enterprise needs were cross-matched against startup capabilities, with a Serendipity Score computed from industry distance. The farther apart the industries, the higher the score — these are matches you would never find on Google.",
   };
 
   return { matching, pairScores };
