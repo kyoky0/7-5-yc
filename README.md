@@ -271,6 +271,8 @@ Push to `main` — Vercel auto-deploys.
 
 Built at Compiled AI Hackathon #3 (July 5, 2026, Ritsumeikan University, Osaka).
 
+![Team](docs/team.png)
+
 | Name | Role | Background |
 |------|------|------------|
 | **Kyosuke Yanagisawa** | Engineer / Product Manager | University of Tokyo, Faculty of Engineering. Top rankings in Nikkei Stock League, Mynavi Career Koshien, Cyber Sakura. Engineer & PM at a UTokyo-affiliated AI startup. |
