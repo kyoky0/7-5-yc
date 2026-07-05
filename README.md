@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agent Expo
 
-## Getting Started
+**Replace 2 days of random conference networking with 10 minutes of AI-matched meetings.**
 
-First, run the development server:
+AI agents negotiate inside a Trusted Execution Environment (TEE) on behalf of each company. They read internal company data -- R&D priorities, procurement needs, org charts -- find the best cross-border matches, and output a meeting schedule. No human ever sees another company's secrets.
+
+**Live demo:** [7-5-yc.vercel.app](https://7-5-yc.vercel.app)
+
+## The Problem
+
+Trade shows waste 80% of attendees' time. Matching happens on public profiles (LinkedIn, pitch decks), not on the real data that determines fit. Current matchmaking platforms don't have DD-level data and default to keyword matching.
+
+## How It Works
+
+1. **Upload Secrets** -- Each company submits goals, org chart, calendars, and disclosure policies. Data is encrypted into a TEE.
+2. **Agents Negotiate** -- AI agents match inside a hardware-isolated Secure Room using SimHash/LSH. Operators cannot see data inside.
+3. **Get Your Schedule** -- Who to meet, why, when, and where. Only privacy-wall-approved outputs leave the enclave.
+
+## Architecture
+
+| Layer | Current Implementation |
+|-------|----------------------|
+| Privacy Wall | TEE + Regex/LLM dual verification, fail-closed |
+| Matching | SimHash/LSH feature-hashing, Hamming similarity |
+| Serendipity Score | novelty + utility - similarity penalty |
+| Anti-Reconstruction | Per-company specificity budget |
+| Integrity Proof | SHA-256 hash chain audit log |
+| Agent Isolation | Per-company TEE enclave, safe messages only |
+| Progressive Disclosure | L0 (anonymous) -> L1 (abstract) -> L2 (detailed) -> L3 (full identity) |
+
+## Stack
+
+- Next.js 16 + TypeScript + Tailwind CSS
+- OpenAI SDK (agent reasoning)
+- SimHash/LSH (capability matching)
+- SHA-256 hash chain (audit trail)
+
+## YC RFS Alignment
+
+**Company Brain** -- AI that understands a company's internal data and acts on it. Agent Expo is a Company Brain applied to cross-border B2B matchmaking: each company's AI agent holds real internal data inside a TEE, then negotiates matches with other companies' agents without exposing raw data.
+
+## Run Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Requires `OPENAI_API_KEY` in `.env.local`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy
 
-## Learn More
+Push to `main` -- Vercel auto-deploys.
 
-To learn more about Next.js, take a look at the following resources:
+## Team
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Built at Compiled AI Hackathon #3 (July 5, 2026, Ritsumeikan University, Osaka).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
