@@ -1,0 +1,39 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  country     String
+  rawInput    String
+  extracted   String
+  encrypted   String   @default("")
+  createdAt   DateTime @default(now())
+
+  matchesAsA Match[] @relation("companyA")
+  matchesAsB Match[] @relation("companyB")
+}
+
+model Match {
+  id               String   @id @default(cuid())
+  companyAId       String
+  companyBId       String
+  intersectionSize Int
+  matchedCategories String  @default("[]")
+  confidence       Float    @default(0)
+  disclosureLevel  Int      @default(0)
+  aOptedIn         Boolean  @default(false)
+  bOptedIn         Boolean  @default(false)
+  proofHash        String   @default("")
+  compatibilityReport String @default("{}")
+  createdAt        DateTime @default(now())
+
+  companyA Company @relation("companyA", fields: [companyAId], references: [id])
+  companyB Company @relation("companyB", fields: [companyBId], references: [id])
+}
