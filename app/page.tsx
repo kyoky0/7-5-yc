@@ -200,16 +200,21 @@ export default function Home() {
           <div className="absolute right-1/3 bottom-1/4 h-64 w-64 rounded-full bg-cyan-400 blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 text-sm font-semibold backdrop-blur-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            YC RFS: Company Brain
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-500/20 px-5 py-2 text-sm font-semibold text-emerald-300 backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            Powered by AWS Nitro Enclaves (TEE)
           </div>
           <h1 className="mb-6 text-6xl font-black tracking-tight lg:text-8xl">Serendipity</h1>
-          <p className="mb-8 text-2xl font-medium text-blue-100 lg:text-3xl">
-            Your AI agent reads your company secrets.<br />
-            Finds the perfect partner.<br />
-            <span className="font-bold text-white">No one else sees a thing.</span>
+          <p className="mb-6 text-2xl font-medium text-blue-100 lg:text-3xl">
+            AI reads your company secrets inside a TEE.<br />
+            Finds the perfect cross-industry partner.<br />
+            <span className="font-bold text-white">No one else — not even us — sees your data.</span>
           </p>
+          <div className="mb-8 mx-auto max-w-xl rounded-xl border border-emerald-800/50 bg-emerald-950/30 px-5 py-3 backdrop-blur-sm">
+            <p className="text-sm text-emerald-300">
+              <span className="font-bold text-emerald-400">TEE (Trusted Execution Environment)</span> — Hardware-encrypted enclave. Memory isolation. vsock-only I/O. Even the server operator cannot see inside.
+            </p>
+          </div>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <div className="rounded-2xl bg-white/10 px-8 py-4 backdrop-blur-sm">
               <div className="text-4xl font-black lg:text-5xl">2 days</div>
@@ -218,7 +223,7 @@ export default function Home() {
             <div className="text-4xl font-black text-blue-300">&rarr;</div>
             <div className="rounded-2xl bg-white/10 px-8 py-4 backdrop-blur-sm">
               <div className="text-4xl font-black text-emerald-400 lg:text-5xl">10 min</div>
-              <div className="text-sm text-blue-200">AI-matched meetings</div>
+              <div className="text-sm text-blue-200">TEE-protected matching</div>
             </div>
           </div>
         </div>
@@ -229,9 +234,9 @@ export default function Home() {
         <h2 className="mb-16 text-center text-4xl font-black text-slate-800 lg:text-5xl">How It Works</h2>
         <div className="grid gap-8 lg:grid-cols-3">
           {[
-            { step: "01", title: "Upload Secrets", desc: "Each company submits goals, org chart, and calendars — encrypted into a TEE.", color: "text-blue-600" },
-            { step: "02", title: "Agents Negotiate", desc: "AI agents match inside a hardware-isolated Secure Room. Operators see nothing.", color: "text-blue-600" },
-            { step: "03", title: "Get Your Schedule", desc: "Who to meet, why, when, and where. Only safe outputs leave the enclave.", color: "text-blue-600" },
+            { step: "01", title: "Local LLM Analysis", desc: "Company data stays on your device. A local LLM extracts capability tags. Zero cloud. Zero leakage.", color: "text-blue-600" },
+            { step: "02", title: "TEE Match Room", desc: "Tags enter an AWS Nitro Enclave — hardware-encrypted, memory-isolated, vsock-only I/O. No one can peek inside.", color: "text-emerald-600" },
+            { step: "03", title: "Safe Output Only", desc: "Privacy Wall + Multi-Agent Consensus inside TEE. Only disclosure-reviewed results leave the enclave.", color: "text-blue-600" },
           ].map((s) => (
             <div key={s.step} className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
               <span className="text-6xl font-black text-blue-100">{s.step}</span>

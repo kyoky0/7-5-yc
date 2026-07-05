@@ -1,0 +1,21 @@
+{
+  "name": "@serendipity/enclave",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@serendipity/common": "*",
+    "@aws-sdk/client-kms": "^3.606.0"
+  },
+  "optionalDependencies": {
+    "node-vsock": "^0.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "typescript": "^5.5.4"
+  }
+}
