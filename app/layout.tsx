@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Palisade — Private Multi-Company Agent Collaboration",
-  description: "Secrets stay behind the wall. Only insights cross it.",
+  title: "Palisade — Serendipity Engine",
+  description: "Google検索では絶対に見つからないマッチを、秘密を守りながら発見する",
 };
 
 export default function RootLayout({
@@ -27,7 +27,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-white text-slate-900">
+        {children}
+      </body>
     </html>
   );
 }

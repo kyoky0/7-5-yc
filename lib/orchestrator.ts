@@ -4,10 +4,11 @@ import { draftInitialContribution, draftFollowUp, critique, synthesizeFinalPropo
 import { computeMatching } from "./matching";
 import { getLedger } from "./state";
 import { remoteDraft, remoteUrlFor } from "./remoteAgents";
-import { Company, CompanyId, FlaggedSummary, RunResult, TimelineEvent, WallVerdict } from "./types";
+import { Company, CompanyId, FlaggedSummary, PairScore, RunResult, TimelineEvent, WallVerdict } from "./types";
 import { Ledger } from "./ledger";
+import { initializeDisclosures, setMatchExists } from "./disclosure";
 
-const CHALLENGE = "高齢者(シニア)向けに、3社の強みを組み合わせた新しい商品・事業を考えてほしい。ただし各社の社外秘データは一切開示しないこと。";
+const CHALLENGE = "大企業が求める技術ニーズと、異業種スタートアップが持つ隠れた技術力のマッチングを、秘密情報を一切開示せずに発見せよ。Google検索では絶対に見つからない、セレンディピティのある組み合わせを提案すること。";
 
 let counter = 0;
 function eid() {
@@ -146,31 +147,67 @@ export async function runScenario(): Promise<RunResult> {
 
   events.push({ id: eid(), type: "log", actor: "system", title: "協働課題を受信", detail: CHALLENGE });
 
+  // Round 1: each company drafts independently
   for (const company of COMPANIES) {
     const outcome = await runCompanyRound(company, 1, [], events, ledger);
     if (outcome.verdict !== "blocked") safeByCompany[company.id] = outcome.safeMessage ?? "";
   }
 
-  const matching = computeMatching();
+  // Cross-matching: enterprise needs × startup capabilities
+  const { matching, pairScores } = computeMatching();
   events.push({ id: eid(), type: "matching", actor: "system", title: "能力マッチング: 秘密を見ずに補完関係を検出", detail: matching.explanation });
 
+  // Initialize progressive disclosure and escalate matched pairs to Level 1
+  initializeDisclosures();
+  for (const pair of pairScores) {
+    const entCompany = COMPANIES.find((c) => c.id === pair.enterprise);
+    const suCompany = COMPANIES.find((c) => c.id === pair.startup);
+    if (entCompany && suCompany) {
+      setMatchExists(
+        pair.enterprise,
+        pair.startup,
+        pair.matchReason,
+        `${entCompany.industry} needs complementary technology`,
+        suCompany.country,
+      );
+    }
+  }
+
+  // Serendipity events for top matches
+  for (const pair of pairScores) {
+    const entCompany = COMPANIES.find((c) => c.id === pair.enterprise);
+    const suCompany = COMPANIES.find((c) => c.id === pair.startup);
+    if (entCompany && suCompany) {
+      events.push({
+        id: eid(),
+        type: "serendipity",
+        actor: "system",
+        title: `セレンディピティ検出: ${entCompany.nameJa} × ${suCompany.nameJa}`,
+        detail: pair.matchReason,
+        serendipityScore: pair.serendipityScore,
+      });
+    }
+  }
+
+  // Round 2: each company refines based on others' safe messages
   for (const company of COMPANIES) {
     const others = COMPANIES.filter((c) => c.id !== company.id).map((c) => ({ name: c.nameJa, text: safeByCompany[c.id] ?? "" }));
     const outcome = await runCompanyRound(company, 2, others, events, ledger);
     if (outcome.verdict !== "blocked") safeByCompany[company.id] = outcome.safeMessage ?? safeByCompany[company.id];
   }
 
+  // Critique and final synthesis
   const safeMessagesList = COMPANIES.map((c) => ({ name: c.nameJa, text: safeByCompany[c.id] ?? "" }));
   const critiqueText = await critique(CHALLENGE, safeMessagesList);
   events.push({ id: eid(), type: "critique", actor: "critique", title: "批評Agent: ギャップ分析", detail: critiqueText });
 
   const finalProposal = await synthesizeFinalProposal(CHALLENGE, safeMessagesList, critiqueText);
-  events.push({ id: eid(), type: "final", actor: "orchestrator", title: "最終共同事業提案", detail: finalProposal });
+  events.push({ id: eid(), type: "final", actor: "orchestrator", title: "最終クロスインダストリー・マッチング提案", detail: finalProposal });
 
-  const finalBlock = ledger.append({ type: "final", actor: "orchestrator", summary: "final joint proposal synthesized from safe messages only", payload: { finalProposal } });
+  const finalBlock = ledger.append({ type: "final", actor: "orchestrator", summary: "final cross-industry matching proposal synthesized from safe messages only", payload: { finalProposal } });
   events.push({ id: eid(), type: "log", actor: "system", title: "最終提案を監査ログに記録", ledgerBlock: finalBlock });
 
-  return { events, ledger: ledger.all(), finalProposal, matching };
+  return { events, ledger: ledger.all(), finalProposal, matching, pairScores };
 }
 
 export { CHALLENGE };

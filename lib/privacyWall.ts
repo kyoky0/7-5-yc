@@ -145,7 +145,7 @@ export function resetBudgets() {
   budgets.clear();
 }
 export function getAllBudgets(): Record<CompanyId, number> {
-  const ids: CompanyId[] = ["nutripack", "silvertech", "quicklogix"];
+  const ids: CompanyId[] = ["megacorp", "altai", "nanoshield", "biowrap"];
   const out = {} as Record<CompanyId, number>;
   for (const id of ids) out[id] = getBudget(id);
   return out;

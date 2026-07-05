@@ -7,8 +7,12 @@ export async function GET() {
     name: c.name,
     nameJa: c.nameJa,
     role: c.role,
+    companyRole: c.companyRole,
+    industry: c.industry,
+    country: c.country,
     color: c.color,
     capabilityTags: c.capabilityTags,
+    needTags: c.needTags,
   }));
   return NextResponse.json(sanitized);
 }

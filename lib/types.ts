@@ -1,17 +1,19 @@
-export type CompanyId = "nutripack" | "silvertech" | "quicklogix";
+export type CompanyId = "megacorp" | "altai" | "nanoshield" | "biowrap";
+export type CompanyRole = "enterprise" | "startup";
 
 export interface Company {
   id: CompanyId;
   name: string;
   nameJa: string;
   role: string;
+  companyRole: CompanyRole;
+  industry: string;
+  country: string;
   color: string;
-  /** Raw secret dossier text. NEVER sent to other agents, orchestrator, or client except via Reveal. */
   secretDossier: string;
-  /** Exact strings that must never leak verbatim (canary tokens for the detector demo). */
   secretTerms: string[];
-  /** Abstracted capability/need tags used ONLY for hashed matching (never raw text shared). */
   capabilityTags: string[];
+  needTags: string[];
 }
 
 export type WallVerdict = "pass" | "redacted" | "blocked";
@@ -23,8 +25,6 @@ export interface FlaggedSpan {
   category: FlagCategory;
 }
 
-/** Category + count only, with no raw span text — this is what's allowed to cross the network from a
- *  remote company machine to the central orchestrator (see lib/remoteAgents.ts). */
 export interface FlaggedSummary {
   category: FlagCategory;
   count: number;
@@ -38,7 +38,6 @@ export interface WallResult {
   reason?: string;
 }
 
-/** Shape returned by a remote per-company agent service — never includes the raw draft or raw flagged text. */
 export interface RemoteAgentResult {
   verdict: WallVerdict;
   safeMessage: string | null;
@@ -49,7 +48,7 @@ export interface RemoteAgentResult {
 export interface LedgerBlock {
   index: number;
   timestamp: number;
-  type: "genesis" | "commitment" | "safe_message" | "blocked" | "reveal" | "matching" | "final";
+  type: "genesis" | "commitment" | "safe_message" | "blocked" | "reveal" | "matching" | "final" | "disclosure" | "nda";
   actor: string;
   summary: string;
   payloadHash: string;
@@ -65,6 +64,7 @@ export type TimelineEventType =
   | "safe_message"
   | "critique"
   | "matching"
+  | "serendipity"
   | "final"
   | "log";
 
@@ -79,9 +79,8 @@ export interface TimelineEvent {
   flaggedSummary?: FlaggedSummary[];
   safeMessage?: string;
   ledgerBlock?: LedgerBlock;
-  /** "remote": ran on the company's own machine, only the safe message crossed the network.
-   *  "local": ran in-process on the orchestrator machine (single-laptop demo fallback). */
   mode?: "local" | "remote";
+  serendipityScore?: number;
 }
 
 export interface RunResult {
@@ -89,12 +88,22 @@ export interface RunResult {
   ledger: LedgerBlock[];
   finalProposal: string;
   matching: MatchingResult;
+  pairScores: PairScore[];
 }
 
 export interface MatchingResult {
   buckets: Record<CompanyId, number[]>;
   overlapScore: number;
   explanation: string;
+}
+
+export interface PairScore {
+  enterprise: CompanyId;
+  startup: CompanyId;
+  similarity: number;
+  serendipityScore: number;
+  industryDistance: number;
+  matchReason: string;
 }
 
 export interface AttackResult {
@@ -114,4 +123,33 @@ export interface RevealResult {
   recomputedHash: string;
   match: boolean;
   rawDossier: string;
+}
+
+export type DisclosureLevel = 0 | 1 | 2 | 3;
+
+export interface DisclosureState {
+  enterpriseId: CompanyId;
+  startupId: CompanyId;
+  level: DisclosureLevel;
+  enterpriseOptedIn: boolean;
+  startupOptedIn: boolean;
+  ndaSigned: boolean;
+  levelData: {
+    0: { matchExists: boolean };
+    1: { abstractCapability: string; abstractNeed: string; region: string } | null;
+    2: { detailedCapability: string; scale: string; timeline: string } | null;
+    3: { companyName: string; contact: string; fullDetails: string } | null;
+  };
+}
+
+export interface NDADocument {
+  id: string;
+  effectiveDate: string;
+  partyA: { description: string; jurisdiction: string };
+  partyB: { description: string; jurisdiction: string };
+  scope: string;
+  duration: string;
+  governingLaw: string;
+  arbitration: string;
+  fullText: string;
 }
