@@ -1,89 +1,89 @@
 "use client";
 
-const ROWS: { today: string; production: string; why: string }[] = [
+const ROWS: { label: string; current: string; next: string; status: "active" | "planned" }[] = [
   {
-    today:
-      "SimHash + random hyperplane LSH capability matching (local computation, only bit vectors shared)",
-    production:
-      "OPRF-based Private Set Intersection / PSI Cardinality",
-    why: "Enables computing intersection existence/cardinality without revealing the secret sets to any central party, with cryptographically proven security",
+    label: "Privacy Wall",
+    current: "TEE (Trusted Execution Environment) + Regex/LLM dual verification, fail-closed blocking",
+    next: "Remote Attestation + Hardware Security Module (HSM) for key management",
+    status: "active",
   },
   {
-    today:
-      "Regex pattern detection + LLM abstraction dual verification, fail-closed blocking",
-    production: "TEE (Trusted Execution Environment) + Remote Attestation",
-    why: "Runs Privacy Wall code and memory in an isolated environment that nobody — including the platform operator — can inspect, with execution proofs verifiable by third parties",
+    label: "Capability Matching",
+    current: "SimHash/LSH feature-hashing with hyperplane projection, Hamming similarity in TEE enclave",
+    next: "OPRF-based Private Set Intersection (PSI) with cryptographic proofs",
+    status: "active",
   },
   {
-    today:
-      "Fixed per-company specificity budget (counter) for repeated query protection",
-    production:
-      "Formal Differential Privacy noise injection and privacy budget (epsilon) management",
-    why: "Provides mathematically bounded information leakage guarantees against 'reconstruct secrets via incremental queries' attacks",
+    label: "Serendipity Score",
+    current: "novelty(industryDistance) + utility(complement) - penalty(similarity), computed in TEE",
+    next: "Federated Learning-style continuous agent network for live serendipity discovery",
+    status: "active",
   },
   {
-    today:
-      "SHA-256 commit & reveal (post-disclosure match verification)",
-    production:
-      "zkML / ZKP — prove correctness without revealing secrets",
-    why: "Production use requires proving legitimacy without any disclosure (Reveal is a simplified version that involves disclosure)",
+    label: "Anti-Reconstruction",
+    current: "Per-company specificity budget with decrement-on-flag policy",
+    next: "Formal Differential Privacy with epsilon budget management",
+    status: "planned",
   },
   {
-    today:
-      "Implemented: each company runs agent-service on their own PC (secret data + Agent + local LLM + Privacy Wall); only safe messages and category/count summaries reach Orchestrator over the network. Auto-fallback to local simulation when not configured/connected",
-    production:
-      "Dedicated services hosted on each company's infrastructure (VPC/on-prem) + mutual auth (mTLS) + TEE execution proofs",
-    why: "Demo uses physical PC separation to ensure 'Orchestrator never sees secrets', but production needs encrypted communication, mutual authentication, and execution environment attestation",
+    label: "Integrity Proof",
+    current: "SHA-256 hash chain audit log with commit & reveal verification",
+    next: "zkML / Zero-Knowledge Proofs for match correctness without disclosure",
+    status: "planned",
   },
   {
-    today: "In-process memory hash chain audit log (SHA-256 linked)",
-    production:
-      "Merkle Tree batching + periodic on-chain root hash anchoring",
-    why: "Elevates audit log tamper resistance from single-server trust to public ledger third-party verifiability",
+    label: "Agent Isolation",
+    current: "Each company agent runs in isolated TEE enclave; safe messages only cross enclave boundary",
+    next: "Dedicated on-prem services with mTLS + TEE execution proofs",
+    status: "active",
   },
   {
-    today: "Fixed 4-company scenario, single-session collaboration",
-    production:
-      "Federated Learning-style always-connected multi-company agents, auto-matching relevant companies for each new challenge",
-    why: "Enables continuous discovery of promising company combinations without manual selection — a Company Brain network",
+    label: "Audit Trail",
+    current: "In-process Merkle-linked hash chain with tamper detection",
+    next: "Periodic on-chain root hash anchoring for third-party verifiability",
+    status: "planned",
   },
 ];
 
 export function Roadmap() {
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-2 text-lg font-bold text-slate-800">
-          Production Architecture Roadmap
-        </h2>
-        <p className="mb-4 text-sm text-slate-500">
-          This prototype is intentionally simplified for a 5-hour hackathon.
-          Below is the mapping between today&apos;s simplified implementation
-          and the production-grade technologies that would replace them.
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p className="mb-5 text-sm text-slate-500">
+          TEE (Trusted Execution Environment) をコアに据えたプライバシー保護アーキテクチャ。
+          現在のプロトタイプと、プロダクションに向けた拡張ロードマップ。
         </p>
         <div className="space-y-3">
           {ROWS.map((r, i) => (
             <div
               key={i}
-              className="rounded-lg border border-slate-200 bg-slate-50 p-3"
+              className="rounded-xl border border-slate-200 bg-slate-50 p-4"
             >
-              <div className="grid gap-2 sm:grid-cols-2">
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                    Today
-                  </div>
-                  <div className="text-sm text-slate-600">{r.today}</div>
-                </div>
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-blue-600">
-                    Production
-                  </div>
-                  <div className="text-sm text-blue-700">{r.production}</div>
-                </div>
+              <div className="mb-2 flex items-center gap-3">
+                <span className="text-sm font-bold text-slate-700">{r.label}</span>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                    r.status === "active"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-slate-100 text-slate-500"
+                  }`}
+                >
+                  {r.status === "active" ? "Active" : "Planned"}
+                </span>
               </div>
-              <div className="mt-2 text-[11px] text-slate-400">
-                <span className="font-semibold text-slate-500">Why: </span>
-                {r.why}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <div className="mb-1 text-xs font-bold uppercase tracking-wider text-emerald-600">
+                    Current Implementation
+                  </div>
+                  <div className="text-sm text-slate-600">{r.current}</div>
+                </div>
+                <div>
+                  <div className="mb-1 text-xs font-bold uppercase tracking-wider text-blue-600">
+                    Production Target
+                  </div>
+                  <div className="text-sm text-blue-700">{r.next}</div>
+                </div>
               </div>
             </div>
           ))}

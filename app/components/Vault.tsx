@@ -5,13 +5,13 @@ import { CompanyMeta } from "./types";
 function roleBadge(companyRole: string) {
   if (companyRole === "enterprise") {
     return (
-      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+      <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white">
         Enterprise
       </span>
     );
   }
   return (
-    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+    <span className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
       Startup
     </span>
   );
@@ -30,6 +30,7 @@ function countryFlag(country: string): string {
     Israel: "\u{1F1EE}\u{1F1F1}",
     Singapore: "\u{1F1F8}\u{1F1EC}",
     Switzerland: "\u{1F1E8}\u{1F1ED}",
+    Kazakhstan: "\u{1F1F0}\u{1F1FF}",
   };
   return flags[country] ?? "\u{1F30D}";
 }
@@ -42,62 +43,76 @@ export function Vault({
   budgets: Record<string, number>;
 }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {companies.map((c) => (
         <div
           key={c.id}
-          className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
         >
-          <div className="mb-1 flex items-center gap-2">
-            <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ background: c.color }}
-            />
-            <span className="text-sm font-bold text-slate-800">
-              {c.nameJa}
-            </span>
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold text-white shadow-sm"
+                style={{ background: c.color }}
+              >
+                {c.nameJa[0]}
+              </div>
+              <div>
+                <div className="text-lg font-bold text-slate-800">
+                  {c.nameJa}
+                </div>
+                <div className="text-sm text-slate-500">{c.role}</div>
+              </div>
+            </div>
             {roleBadge(c.companyRole)}
           </div>
-          <div className="mb-1 text-[11px] text-slate-500">{c.role}</div>
-          <div className="mb-2 flex items-center gap-1 text-[11px] text-slate-500">
-            <span>{countryFlag(c.country)}</span>
-            <span>{c.country}</span>
-            <span className="mx-1 text-slate-300">|</span>
+
+          <div className="mb-3 flex items-center gap-2 text-sm text-slate-600">
+            <span className="text-lg">{countryFlag(c.country)}</span>
+            <span className="font-medium">{c.country}</span>
+            <span className="text-slate-300">|</span>
             <span>{c.industry}</span>
           </div>
-          <div className="mb-2 rounded-lg border border-slate-200 bg-slate-50 p-2 text-[11px] text-slate-400">
-            <span className="font-semibold text-slate-500">
+
+          <div className="mb-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-500">
               Secret Vault
-            </span>{" "}
-            — {"█".repeat(20)}
-            <br />
-            <span className="text-slate-400">access: private-agent-only</span>
+            </div>
+            <div className="font-mono text-sm text-slate-400">
+              {"█".repeat(24)}
+            </div>
+            <div className="mt-1 text-xs text-slate-400">
+              access: private-agent-only
+            </div>
           </div>
-          <div className="mb-1 flex flex-wrap gap-1">
+
+          <div className="mb-3 flex flex-wrap gap-1.5">
             {c.capabilityTags.map((t) => (
               <span
                 key={t}
-                className="rounded-full bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-600"
+                className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700"
               >
                 {t}
               </span>
             ))}
           </div>
+
           {c.companyRole === "enterprise" && c.needTags.length > 0 && (
-            <div className="mb-1 flex flex-wrap gap-1">
+            <div className="mb-3 flex flex-wrap gap-1.5">
               {c.needTags.map((t) => (
                 <span
                   key={t}
-                  className="rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-600"
+                  className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700"
                 >
                   need: {t}
                 </span>
               ))}
             </div>
           )}
-          <div className="mt-2 flex items-center gap-2 text-[11px] text-slate-500">
-            <span>specificity budget</span>
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
+
+          <div className="flex items-center gap-3 text-sm text-slate-500">
+            <span className="font-medium">Specificity Budget</span>
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
               <div
                 className="h-full rounded-full bg-blue-500 transition-all"
                 style={{
@@ -105,7 +120,7 @@ export function Vault({
                 }}
               />
             </div>
-            <span className="font-mono">{budgets[c.id] ?? 5}/5</span>
+            <span className="font-mono font-bold">{budgets[c.id] ?? 5}/5</span>
           </div>
         </div>
       ))}

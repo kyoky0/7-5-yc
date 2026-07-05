@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Palisade — Serendipity Engine",
-  description: "Google検索では絶対に見つからないマッチを、秘密を守りながら発見する",
+  title: "Agent Expo — Secure Agent-to-Agent Conference Matching",
+  description: "We replaced 2 days of random conference networking with 10 minutes of secure agent-to-agent matching.",
 };
 
 export default function RootLayout({

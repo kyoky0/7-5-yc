@@ -21,24 +21,25 @@ export function MatchingPanel({
   const ids = companies.map((c) => c.id);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="mb-3 text-sm font-semibold text-blue-700">
-        Private Capability Matching (SimHash / LSH)
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h3 className="mb-1 text-lg font-bold text-blue-700">
+        SimHash / LSH Capability Matching
       </h3>
-      <div className="mb-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <p className="mb-4 text-sm text-slate-500">
+        Feature-hashing + hyperplane projection による秘密非開示マッチング（TEE内で計算）
+      </p>
+
+      <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {companies.map((c) => (
           <div key={c.id}>
-            <div
-              className="mb-1 text-[11px] font-semibold"
-              style={{ color: c.color }}
-            >
+            <div className="mb-2 text-sm font-bold" style={{ color: c.color }}>
               {c.nameJa}
             </div>
-            <div className="grid grid-cols-8 gap-0.5">
+            <div className="grid grid-cols-8 gap-1">
               {matching.buckets[c.id]?.map((bit, i) => (
                 <div
                   key={i}
-                  className={`h-2 w-2 rounded-[2px] ${
+                  className={`h-3 w-3 rounded ${
                     bit ? "bg-blue-500" : "bg-slate-200"
                   }`}
                 />
@@ -48,7 +49,7 @@ export function MatchingPanel({
         ))}
       </div>
 
-      <div className="space-y-1.5 text-[11px] text-slate-500">
+      <div className="space-y-2 text-sm text-slate-500">
         {ids.map((a, i) =>
           ids.slice(i + 1).map((b) => {
             const score = hamming(matching.buckets[a], matching.buckets[b]);
@@ -60,30 +61,27 @@ export function MatchingPanel({
                 (p.enterprise === b && p.startup === a)
             );
             return (
-              <div key={a + b} className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="w-36 shrink-0 text-slate-600">
-                    {ca.nameJa} <span className="text-slate-300">&#x2194;</span>{" "}
-                    {cb.nameJa}
+              <div key={a + b} className="space-y-1">
+                <div className="flex items-center gap-3">
+                  <span className="w-40 shrink-0 font-medium text-slate-600">
+                    {ca.nameJa} ↔ {cb.nameJa}
                   </span>
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
                     <div
                       className="h-full rounded-full bg-blue-500"
-                      style={{
-                        width: `${Math.round(score * 100)}%`,
-                      }}
+                      style={{ width: `${Math.round(score * 100)}%` }}
                     />
                   </div>
-                  <span className="w-10 shrink-0 text-right font-mono text-slate-600">
+                  <span className="w-12 shrink-0 text-right font-mono font-bold text-slate-600">
                     {Math.round(score * 100)}%
                   </span>
                 </div>
                 {ps && (
-                  <div className="ml-36 flex items-center gap-2 pl-2">
-                    <span className="rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
+                  <div className="ml-40 flex items-center gap-3 pl-3">
+                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-700">
                       Serendipity {Math.round(ps.serendipityScore * 100)}%
                     </span>
-                    <span className="text-[10px] text-slate-400">
+                    <span className="text-xs text-slate-400">
                       {ps.matchReason}
                     </span>
                   </div>
@@ -94,7 +92,7 @@ export function MatchingPanel({
         )}
       </div>
 
-      <p className="mt-3 text-[11px] leading-relaxed text-slate-400">
+      <p className="mt-4 text-sm leading-relaxed text-slate-400">
         {matching.explanation}
       </p>
     </div>

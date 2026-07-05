@@ -22,43 +22,48 @@ export function LedgerPanel({
   verified: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-700">
-          Audit Log (Hash Chain)
-        </h3>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h3 className="text-base font-bold text-slate-700">
+            Audit Log (Hash Chain)
+          </h3>
+          <p className="text-xs text-slate-400">
+            SHA-256 linked, tamper-evident
+          </p>
+        </div>
         <span
-          className={`rounded-full px-2 py-0.5 text-[11px] font-mono ${
+          className={`rounded-full px-3 py-1 text-sm font-bold ${
             verified
               ? "bg-emerald-50 text-emerald-600"
               : "bg-red-50 text-red-600"
           }`}
         >
-          {verified ? "chain verified" : "TAMPERED"}
+          {verified ? "Chain Verified" : "TAMPERED"}
         </span>
       </div>
-      <div className="max-h-72 space-y-1.5 overflow-y-auto pr-1">
+      <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
         {blocks
           .slice()
           .reverse()
           .map((b) => (
             <div
               key={b.index}
-              className="flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50 px-2 py-1.5 text-[11px]"
+              className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm"
             >
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-blue-100 text-[9px] font-bold text-blue-600">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-xs font-bold text-blue-600">
                 {typeIcon[b.type] ?? "?"}
               </span>
-              <span className="w-6 shrink-0 font-mono text-slate-400">
+              <span className="w-8 shrink-0 font-mono text-slate-400">
                 #{b.index}
               </span>
-              <span className="w-24 shrink-0 truncate text-slate-500">
+              <span className="w-28 shrink-0 truncate font-medium text-slate-500">
                 {b.actor}
               </span>
               <span className="flex-1 truncate text-slate-400">
                 {b.summary}
               </span>
-              <span className="shrink-0 font-mono text-slate-400">
+              <span className="shrink-0 font-mono text-xs text-slate-400">
                 {b.hash.slice(0, 8)}...
               </span>
             </div>
