@@ -271,6 +271,12 @@ Push to `main` — Vercel auto-deploys.
 
 Built at Compiled AI Hackathon #3 (July 5, 2026, Ritsumeikan University, Osaka).
 
+| Name | Role | Background |
+|------|------|------------|
+| **Kyosuke Yanagisawa** | Engineer / Product Manager | University of Tokyo, Faculty of Engineering. Top rankings in Nikkei Stock League, Mynavi Career Koshien, Cyber Sakura. Engineer & PM at a UTokyo-affiliated AI startup. |
+| **Jun Kawai** | Applied AI Engineer & Founder | Research at NASA, first-author publication in Science. Built AI systems for medical imaging, anomaly detection, drone inspection. Hackathon awards at ETH Tokyo, ETHGlobal Singapore. Projects: zkIoT, Labo Protocol, inCar. |
+| **AYJYANA** | Junior System Engineer | Currently working in Osaka. |
+
 ## License
 
 MIT
